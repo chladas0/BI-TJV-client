@@ -11,11 +11,10 @@ const LoginPage = (props) => {
         const responseUsers = await axios.get(
             `http://localhost:8080/users`
         );
+
         const users = responseUsers.data;
         const findUser = users.find((user) => user.username === username);
-        console.log(findUser);
         if (findUser) {
-            console.log(findUser.id);
             props.setUser(findUser);
             localStorage.setItem("user", JSON.stringify(findUser));
             window.location.href = "/";

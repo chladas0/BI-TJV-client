@@ -16,7 +16,6 @@ const RegisterPage = () => {
             const findUser = users.find((user) => user.username === username);
             if (findUser) {
                 alert('Username must be unique');
-                return;
             } else {
                 const response = await axios.post('http://localhost:8080/users', {
                     username,
@@ -24,12 +23,10 @@ const RegisterPage = () => {
                 });
                 localStorage.setItem("user", JSON.stringify(response.data));
                 window.location.href = "/";
-                console.log(response.data);
             }
         } catch (error) {
             console.error('Error posting data:', error);
         }
-        console.log('Username:', username, 'Password:', password);
     };
 
     return (
