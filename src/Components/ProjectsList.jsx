@@ -18,11 +18,12 @@ import {
     List,
     ListItem,
     ListItemText,
-    DialogContentText,
+    DialogContentText, Fab,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import {useNavigate} from "react-router-dom";
+import AddIcon from "@mui/icons-material/Add";
 
 const ProjectStates = {
     VIEW: 'view',
@@ -108,6 +109,7 @@ const ProjectsPage = ({ userId }) => {
         } else {
            setSelectedUsers([...selectedUsers, user.id]);
         }
+        setNewProjectContributors(selectedUsers);
     };
 
     const handleCreateProjectClick = () => {
@@ -180,6 +182,7 @@ const ProjectsPage = ({ userId }) => {
         setNewProjectName(projectData.name);
         setNewProjectContributors(projectData.contributorsIds);
         setNewProjectDescription(projectData.description);
+        setSelectedUsers(projectData.contributorsIds);
     };
 
     const handleEditCancel = () => {
@@ -198,7 +201,7 @@ const ProjectsPage = ({ userId }) => {
                 `http://localhost:8080/projects/${updatingProject}`,
                 {
                     name: newProjectName,
-                    contributorsIds: newProjectContributors,
+                    contributorsIds: selectedUsers,
                     description: newProjectDescription,
                 }
             );
@@ -225,7 +228,16 @@ const ProjectsPage = ({ userId }) => {
     };
 
     let content;
-    if (projectState === ProjectStates.VIEW) {
+
+    if (!userId) {
+        return (
+            <Container maxWidth="lg" style={{ marginTop: '20px' }}>
+                <Typography variant="h6">You must be logged in to view projects.</Typography>
+            </Container>
+        );
+    }
+
+    else if (projectState === ProjectStates.VIEW) {
         content = (
             <Grid container spacing={3}>
                 {projects.map((project) => (
@@ -246,7 +258,7 @@ const ProjectsPage = ({ userId }) => {
                                             handleEditClick(project.id);
                                         }}
                                     >
-                                        <EditIcon />
+                                    <EditIcon />
                                     </IconButton>
 
                                     <IconButton
@@ -257,22 +269,21 @@ const ProjectsPage = ({ userId }) => {
                                             handleDeleteClick(project.id);
                                         }}
                                     >
-                                        <DeleteIcon />
+                                    <DeleteIcon />
                                     </IconButton>
                                 </Box>
                             </CardContent>
                         </Card>
                     </Grid>
                 ))}
-
-                <Button
-                    variant="contained"
-                    color="success"
-                    sx={{ mt: '20px' }}
+                <Fab
+                    color="primary"
+                    aria-label="add"
+                    sx={{position: 'fixed', bottom: '16px', right: '16px', width: '70px', height: '70px',}}
                     onClick={handleCreateProjectClick}
                 >
-                    Create Project
-                </Button>
+                    <AddIcon />
+                </Fab>
             </Grid>
         );
     } else if (projectState === ProjectStates.CREATE) {
