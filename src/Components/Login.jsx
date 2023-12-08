@@ -30,6 +30,7 @@ const LoginPage = (props) => {
             </Typography>
             <form onSubmit={handleSubmit}>
                 <TextField
+                    autoComplete="off"
                     variant="outlined"
                     margin="normal"
                     required

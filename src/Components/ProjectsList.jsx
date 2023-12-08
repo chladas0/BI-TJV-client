@@ -241,7 +241,7 @@ const ProjectsPage = ({ userId }) => {
         content = (
             <Grid container spacing={3}>
                 {projects.map((project) => (
-                    <Grid item xs={12} sm={6} md={4} key={project.id} onClick={() => navigate(`/project/${project.id}`)} sx={{
+                    <Grid item xs={12} sm={6} md={4} key={project.id} onClick={() => navigate(`/projects/${project.id}`)} sx={{
                             '&:hover': {cursor: 'pointer', boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)', transform: 'scale(1.02)',},}}
                     >
                         <Card>
@@ -291,6 +291,7 @@ const ProjectsPage = ({ userId }) => {
             <form onSubmit={handleCreateProjectSubmit}>
                 <TextField
                     label="Project Name"
+                    autoComplete="off"
                     fullWidth
                     required
                     value={newProjectName}
@@ -299,6 +300,7 @@ const ProjectsPage = ({ userId }) => {
                 />
                 <TextField
                     label="Contributors"
+                    autoComplete="off"
                     fullWidth
                     value={selectedUsers.map((userId) => userId.toString()).join(', ')}
                     onClick={handleContributorsClick}
@@ -307,6 +309,7 @@ const ProjectsPage = ({ userId }) => {
                 />
                 <TextField
                     label="Description"
+                    autoComplete="off"
                     fullWidth
                     multiline
                     rows={4}
@@ -317,7 +320,7 @@ const ProjectsPage = ({ userId }) => {
                 <Button type="submit" variant="contained" color="primary" sx={{ mr: 2 }}>
                     Create Project
                 </Button>
-                {/* Display cancel button to go back to VIEW state */}
+
                 <Button
                     onClick={handleCreateProjectClose}
                     variant="contained"

@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import {useNavigate, useParams} from 'react-router-dom';
 import { Grid, Typography, IconButton, Card, CardContent, Box, Fab, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useParams } from 'react-router-dom';
+import AddIcon from "@mui/icons-material/Add";
 
 const TaskList = ({ userId }) => {
     const [tasks, setTasks] = useState([]);
     const { projectId } = useParams();
     const [deletingTask, setDeletingTask] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchTasks = async () => {
@@ -24,12 +26,18 @@ const TaskList = ({ userId }) => {
 
     const handleEditClick = (taskId) => {
         // Implement edit functionality
-        console.log('Edit task with ID:', taskId);
+        navigate(`/projects/${projectId}/update-task/${taskId}`);
     };
 
     const handleDeleteClick = (taskId) => {
         setDeletingTask(taskId);
     };
+
+    const handleCreateClick = () =>
+    {
+        navigate(`/projects/${projectId}/create-task`);
+    }
+
 
     const handleDeleteConfirm = async () => {
         try {
@@ -75,6 +83,7 @@ const TaskList = ({ userId }) => {
                                 <KeyValuePair label="Status" value={task.status} />
                             </Box>
                         </CardContent>
+
                         <Box sx={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', padding: '16px' }}>
                             <IconButton
                                 aria-label="edit"
@@ -91,11 +100,21 @@ const TaskList = ({ userId }) => {
                                 <DeleteIcon />
                             </IconButton>
                         </Box>
+
                     </Card>
                 </Grid>
             ))}
+            <Fab
+                color="primary"
+                aria-label="add"
+                sx={{position: 'fixed', bottom: '16px', right: '16px', width: '70px', height: '70px',}}
+                onClick={handleCreateClick}
+            >
+                <AddIcon />
+            </Fab>
 
-            <Dialog open={deletingTask} onClose={handleDeleteCancel}>
+
+            <Dialog open={deletingTask !== null} onClose={handleDeleteCancel}>
                 <DialogTitle>Delete Task</DialogTitle>
                 <DialogContent>
                     <Typography>
