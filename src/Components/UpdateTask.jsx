@@ -41,8 +41,9 @@ const UpdateTask = () => {
         fetchTaskData();
     }, [projectId, taskId]);
 
-    const handleUpdateTask = async () => {
+    const handleUpdateTask = async (e) => {
         try {
+            e.preventDefault();
             await axios.put(`http://localhost:8080/task/${taskId}`, {
                 taskName,
                 description,
@@ -62,11 +63,13 @@ const UpdateTask = () => {
             <Typography variant="h4" gutterBottom>
                 Update Task
             </Typography>
-            <Box>
 
+            <form onSubmit={handleUpdateTask}>
                 <TextField
                     label="Task Name"
                     value={taskName}
+                    autoComplete="off"
+                    required
                     onChange={(e) => setTaskName(e.target.value)}
                     fullWidth
                     margin="normal"
@@ -75,6 +78,7 @@ const UpdateTask = () => {
                 <TextField
                     label="Description"
                     value={description}
+                    autoComplete="off"
                     onChange={(e) => setDescription(e.target.value)}
                     fullWidth
                     margin="normal"
@@ -84,6 +88,7 @@ const UpdateTask = () => {
                     label="Due Date"
                     type="datetime-local"
                     value={dueDate}
+                    required
                     onChange={(e) => setDueDate(e.target.value)}
                     fullWidth
                     margin="normal"
@@ -101,16 +106,18 @@ const UpdateTask = () => {
                         <MenuItem value="COMPLETED">COMPLETED</MenuItem>
                     </Select>
                 </FormControl>
-            </Box>
 
             <Box mt={2}>
                 <Button onClick={() => navigate(`/projects/${projectId}`)} color="primary" variant="outlined">
                     Cancel
                 </Button>
-                <Button onClick={handleUpdateTask} color="primary" variant="contained" sx={{ marginLeft: 2 }}>
+                <Button type = "submit" color="primary" variant="contained" sx={{ marginLeft: 2 }}>
                     Update
                 </Button>
             </Box>
+
+            </form>
+
 
         </Container>
     );

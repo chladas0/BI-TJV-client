@@ -30,6 +30,7 @@ const Navbar = ({ user }) => {
                             </Typography>
                         </RouterLink>
                     </Box>
+
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                         {user.username ? (
                             <Button

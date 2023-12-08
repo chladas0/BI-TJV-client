@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { TextField, Button, Container, Typography } from '@mui/material';
 import axios from 'axios';
+import {useNavigate} from "react-router-dom";
 
-const RegisterPage = () => {
+const RegisterPage = (props) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -22,7 +24,8 @@ const RegisterPage = () => {
                     password
                 });
                 localStorage.setItem("user", JSON.stringify(response.data));
-                window.location.href = "/";
+                props.setUser(response.data);
+                navigate("/");
             }
         } catch (error) {
             console.error('Error posting data:', error);
@@ -35,8 +38,10 @@ const RegisterPage = () => {
                 Register
             </Typography>
             <form onSubmit={handleSubmit}>
+
                 <TextField
                     variant="outlined"
+                    autoComplete="off"
                     margin="normal"
                     required
                     fullWidth
@@ -45,8 +50,10 @@ const RegisterPage = () => {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                 />
+
                 <TextField
                     variant="outlined"
+                    autoComplete="off"
                     margin="normal"
                     required
                     fullWidth
@@ -55,6 +62,7 @@ const RegisterPage = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 />
+
                 <Button
                     type="submit"
                     fullWidth
@@ -63,6 +71,7 @@ const RegisterPage = () => {
                 >
                     Register
                 </Button>
+
             </form>
         </Container>
     );

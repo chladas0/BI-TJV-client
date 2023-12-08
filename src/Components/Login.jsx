@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { TextField, Button, Container, Typography } from '@mui/material';
 import axios from 'axios';
+import {useNavigate} from "react-router-dom";
 
 const LoginPage = (props) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -17,7 +19,7 @@ const LoginPage = (props) => {
         if (findUser) {
             props.setUser(findUser);
             localStorage.setItem("user", JSON.stringify(findUser));
-            window.location.href = "/";
+            navigate("/");
         } else {
             alert("User not found");
         }
@@ -28,7 +30,9 @@ const LoginPage = (props) => {
             <Typography component="h1" variant="h5">
                 Login
             </Typography>
+
             <form onSubmit={handleSubmit}>
+
                 <TextField
                     autoComplete="off"
                     variant="outlined"
@@ -40,6 +44,7 @@ const LoginPage = (props) => {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                 />
+
                 <TextField
                     variant="outlined"
                     margin="normal"
@@ -50,6 +55,7 @@ const LoginPage = (props) => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 />
+
                 <Button
                     type="submit"
                     fullWidth
@@ -58,6 +64,7 @@ const LoginPage = (props) => {
                 >
                     Login
                 </Button>
+
             </form>
         </Container>
     );

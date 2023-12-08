@@ -8,7 +8,7 @@ import AddIcon from "@mui/icons-material/Add";
 
 const TaskList = ({ userId }) => {
     const [tasks, setTasks] = useState([]);
-    const { projectId } = useParams();
+    const {projectId } = useParams();
     const [deletingTask, setDeletingTask] = useState(null);
     const navigate = useNavigate();
 
@@ -25,7 +25,6 @@ const TaskList = ({ userId }) => {
     }, [projectId, userId]);
 
     const handleEditClick = (taskId) => {
-        // Implement edit functionality
         navigate(`/projects/${projectId}/update-task/${taskId}`);
     };
 
@@ -33,11 +32,13 @@ const TaskList = ({ userId }) => {
         setDeletingTask(taskId);
     };
 
-    const handleCreateClick = () =>
-    {
+    const handleCreateClick = () => {
         navigate(`/projects/${projectId}/create-task`);
     }
 
+    const handleDeleteCancel = () => {
+        setDeletingTask(null);
+    };
 
     const handleDeleteConfirm = async () => {
         try {
@@ -50,10 +51,6 @@ const TaskList = ({ userId }) => {
         } finally {
             setDeletingTask(null);
         }
-    };
-
-    const handleDeleteCancel = () => {
-        setDeletingTask(null);
     };
 
     return (
@@ -112,7 +109,6 @@ const TaskList = ({ userId }) => {
             >
                 <AddIcon />
             </Fab>
-
 
             <Dialog open={deletingTask !== null} onClose={handleDeleteCancel}>
                 <DialogTitle>Delete Task</DialogTitle>

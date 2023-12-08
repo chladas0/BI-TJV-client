@@ -22,8 +22,9 @@ const CreateTask = () => {
     const navigate = useNavigate();
     const { projectId } = useParams();
 
-    const handleCreateTask = async () => {
+    const handleCreateTask = async (e) => {
         try {
+            e.preventDefault();
             await axios.post(`http://localhost:8080/projects/${projectId}/tasks`, {
                 taskName,
                 description,
@@ -40,13 +41,17 @@ const CreateTask = () => {
 
     return (
         <Container maxWidth="md">
+
             <Typography variant="h4" gutterBottom>
                 Create Task
             </Typography>
-            <Box>
 
+            <form onSubmit={handleCreateTask}>
+            <Box>
                 <TextField
                     label="Task Name"
+                    autoComplete="off"
+                    required
                     value={taskName}
                     onChange={(e) => setTaskName(e.target.value)}
                     fullWidth
@@ -56,6 +61,7 @@ const CreateTask = () => {
                 <TextField
                     label="Description"
                     value={description}
+                    autoComplete="off"
                     onChange={(e) => setDescription(e.target.value)}
                     fullWidth
                     margin="normal"
@@ -64,6 +70,7 @@ const CreateTask = () => {
                 <TextField
                     label="Due Date"
                     type="datetime-local"
+                    required
                     value={dueDate}
                     onChange={(e) => setDueDate(e.target.value)}
                     fullWidth
@@ -87,10 +94,12 @@ const CreateTask = () => {
                 <Button onClick={() => navigate(`/projects/${projectId}`)} color="primary" variant="outlined">
                     Cancel
                 </Button>
-                <Button onClick={handleCreateTask} color="primary" variant="contained" sx={{ marginLeft: 2 }}>
+
+                <Button type= "submit" color="primary" variant="contained" sx={{ marginLeft: 2 }}>
                     Create
                 </Button>
             </Box>
+            </form>
 
         </Container>
     );
