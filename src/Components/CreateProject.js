@@ -26,7 +26,6 @@ const fetchAllUsers = async () => {
 
 const CreateProject = ({ userId }) => {
     const [newProjectName, setNewProjectName] = useState('');
-    const [newProjectContributors, setNewProjectContributors] = useState([]);
     const [newProjectDescription, setNewProjectDescription] = useState('');
 
     const [openUserDialog, setOpenUserDialog] = useState(false);
@@ -71,7 +70,7 @@ const CreateProject = ({ userId }) => {
                 `http://localhost:8080/users/${userId}/projects`,
                 {
                     name: newProjectName,
-                    contributorsIds: newProjectContributors,
+                    contributorsIds: selectedUsers,
                     description: newProjectDescription,
                 }
             );
@@ -99,7 +98,13 @@ const CreateProject = ({ userId }) => {
                     label="Contributors"
                     autoComplete="off"
                     fullWidth
-                    value={selectedUsers.map((userId) => userId.toString()).join(', ')}
+                    value={(() => {
+                        const contributorNames = selectedUsers.map((userId) => {
+                            const user = allUsers.find((u) => u.id === userId);
+                            return user ? user.username : 'Unknown User';
+                        });
+                        return contributorNames.join(', ');
+                    })()}
                     onClick={handleContributorsClick}
                     margin="normal"
                     readOnly

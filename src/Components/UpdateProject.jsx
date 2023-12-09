@@ -11,7 +11,7 @@ import {
     Checkbox,
     List,
     ListItem,
-    ListItemText,
+    ListItemText, Box,
 } from '@mui/material';
 import {useNavigate, useParams} from "react-router-dom";
 
@@ -51,6 +51,8 @@ const UpdateProject = ({ userId }) => {
                     setNewProjectName(updatingProject.name);
                     setNewProjectDescription(updatingProject.description);
                     setSelectedUsers(updatingProject.contributorsIds);
+                    const users = await fetchAllUsers();
+                    setAllUsers(users);
                 } catch (error) {
                     console.error('Error fetching projects:', error);
                 }
@@ -127,7 +129,13 @@ const UpdateProject = ({ userId }) => {
                 <TextField
                     label="Contributors"
                     fullWidth
-                    value={selectedUsers.map((userId) => userId.toString()).join(', ')}
+                    value={(() => {
+                        const contributorNames = selectedUsers.map((userId) => {
+                            const user = allUsers.find((u) => u.id === userId);
+                            return user ? user.username : 'Unknown User';
+                        });
+                        return contributorNames.join(', ');
+                    })()}
                     onClick={handleContributorsClick}
                     margin="normal"
                     readOnly
@@ -144,13 +152,14 @@ const UpdateProject = ({ userId }) => {
                     margin="normal"
                 />
 
-                <Button type="submit" variant="contained" color="primary" sx={{ mr: 2 }}>
-                    Update Project
-                </Button>
-
-                <Button onClick={handleEditCancel} variant="contained" color="secondary">
-                    Cancel
-                </Button>
+                <Box mt={2}>
+                    <Button onClick={handleEditCancel} variant="contained" color="secondary">
+                        Cancel
+                    </Button>
+                    <Button type="submit" variant="contained" color="primary" sx={{ marginLeft: 2 }}>
+                        Update Project
+                    </Button>
+                </Box>
             </form>
 
             <Dialog open={openUserDialog} onClose={handleUserDialogClose}>

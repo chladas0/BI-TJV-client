@@ -13,12 +13,13 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
-    DialogContentText, Fab,
+    DialogContentText,
+    Fab,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import {useNavigate} from "react-router-dom";
-import AddIcon from "@mui/icons-material/Add";
+import { useNavigate } from 'react-router-dom';
+import AddIcon from '@mui/icons-material/Add';
 
 const fetchProjects = async (userId) => {
     try {
@@ -29,29 +30,51 @@ const fetchProjects = async (userId) => {
     }
 };
 
+const fetchUnfinishedTasks = async (userId) => {
+    try {
+        const response = await axios.get(`http://localhost:8080/users/${userId}/unfinishedTasks`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching unfinished tasks:', error);
+    }
+};
+
 const ProjectsPage = ({ userId }) => {
     const [projects, setProjects] = useState([]);
     const [deletingProject, setDeletingProject] = useState(null);
+    const [unfinishedTasks, setUnfinishedTasks] = useState([]);
+    const [showUnfinishedTasks, setShowUnfinishedTasks] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (userId) {
-            const fetchAndSetProjects = async () => {
-                try {
-                    const fetchedProjects = await fetchProjects(userId);
-                    if (fetchedProjects) {
-                        setProjects(fetchedProjects);
-                    }
-                } catch (error) {
-                    console.error('Error fetching projects:', error);
+        const fetchAndSetProjects = async () => {
+            try {
+                const fetchedProjects = await fetchProjects(userId);
+                if (fetchedProjects) {
+                    setProjects(fetchedProjects);
                 }
-            };
+            } catch (error) {
+                console.error('Error fetching projects:', error);
+            }
+        };
+
+        const fetchAndSetUnfinishedTasks = async () => {
+            try {
+                const tasks = await fetchUnfinishedTasks(userId);
+                setUnfinishedTasks(tasks);
+            } catch (error) {
+                console.error('Error fetching unfinished tasks:', error);
+            }
+        };
+
+        if (userId) {
             fetchAndSetProjects();
+            fetchAndSetUnfinishedTasks();
         }
     }, [userId]);
 
     const handleCreateProjectClick = () => {
-        navigate("/create-project");
+        navigate('/create-project');
     };
 
     const handleEditClick = (projectId) => {
@@ -60,6 +83,15 @@ const ProjectsPage = ({ userId }) => {
 
     const handleDeleteClick = (projectId) => {
         setDeletingProject(projectId);
+    };
+
+    const findProjectByTaskId = (taskId) => {
+        for (const project of projects) {
+            if (project.tasksIds.includes(taskId)) {
+                return project;
+            }
+        }
+        return null;
     };
 
     const handleDeleteConfirm = async () => {
@@ -79,31 +111,36 @@ const ProjectsPage = ({ userId }) => {
         setDeletingProject(null);
     };
 
-    if (!userId) {
-        return (
-            <Container maxWidth="lg" style={{ marginTop: '20px' }}>
-                <Typography variant="h6">You must be logged in to view projects.</Typography>
-            </Container>
-        );
-    }
+    const handleShowTasksClick = () => {
+        setShowUnfinishedTasks(!showUnfinishedTasks);
+    };
+
+    const handleUnfinishedTaskClick = (taskId) => {
+        const projectId = findProjectByTaskId(taskId).id;
+        navigate(`/projects/${projectId}`);
+    };
 
     return (
         <Container maxWidth="lg" style={{ marginTop: '20px' }}>
             <Grid container spacing={3}>
                 {projects.map((project) => (
-                    <Grid item xs={12} sm={6} md={4} key={project.id}
-                          onClick={() => navigate(`/projects/${project.id}`)}
-                          sx={{'&:hover': {cursor: 'pointer', boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
-                                  transform: 'scale(1.02)',},}}
+                    <Grid item xs={12} sm={6} md={4}
+                        key={project.id}
+                        onClick={() => navigate(`/projects/${project.id}`)}
+                        sx={{
+                            '&:hover': {
+                                cursor: 'pointer',
+                                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+                                transform: 'scale(1.02)',
+                            },
+                        }}
                     >
                         <Card>
                             <CardContent sx={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <Typography variant="h5" component="h2">
                                     {project.name}
                                 </Typography>
-
                                 <Box>
-
                                     <IconButton
                                         aria-label="edit"
                                         color="primary"
@@ -114,7 +151,6 @@ const ProjectsPage = ({ userId }) => {
                                     >
                                         <EditIcon />
                                     </IconButton>
-
                                     <IconButton
                                         aria-label="delete"
                                         color="error"
@@ -125,24 +161,63 @@ const ProjectsPage = ({ userId }) => {
                                     >
                                         <DeleteIcon />
                                     </IconButton>
-
                                 </Box>
                             </CardContent>
                         </Card>
                     </Grid>
                 ))}
 
+                <Grid item xs={12}>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleShowTasksClick}
+                        style={{ marginTop: '20px' }}
+                    >
+                        {showUnfinishedTasks ? 'Hide Unfinished Tasks' : 'Show Unfinished Tasks'}
+                    </Button>
+                </Grid>
+
+                {showUnfinishedTasks && (
+                    <Grid item xs={12}>
+                        <Typography variant="h4" style={{ marginBottom: '20px', color: '#8b0000' }}>
+                            Unfinished Tasks
+                        </Typography>
+                        <Grid container spacing={3}>
+                            {unfinishedTasks.map((task) => (
+                                <Grid item xs={12} md={4} key={task.id} onClick={() => handleUnfinishedTaskClick(task.id)}>
+                                    <Card sx={{ cursor: 'pointer', marginBottom: '20px'}}>
+                                        <CardContent>
+                                        <Box>
+                                            <KeyValuePair label="Name" value={task.taskName} />
+                                            <KeyValuePair label="Due Date" value={formatDate(task.dueDate)} />
+                                            <KeyValuePair label="Project" value={findProjectByTaskId(task.id).name} />
+                                        </Box>
+                                        </CardContent>
+                                    </Card>
+                                </Grid>
+                            ))}
+                        </Grid>
+                    </Grid>
+                )}
+
                 <Fab
                     color="primary"
                     aria-label="add"
-                    sx={{position: 'fixed', bottom: '16px', right: '16px', width: '70px', height: '70px',}}
+                    sx={{
+                        position: 'fixed',
+                        bottom: '16px',
+                        right: '16px',
+                        width: '70px',
+                        height: '70px',
+                    }}
                     onClick={handleCreateProjectClick}
                 >
                     <AddIcon />
                 </Fab>
             </Grid>
 
-            <Dialog open={deletingProject !== null}  onClose={handleDeleteCancel}>
+            <Dialog open={deletingProject !== null} onClose={handleDeleteCancel}>
                 <DialogTitle>Delete Project</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
@@ -158,9 +233,19 @@ const ProjectsPage = ({ userId }) => {
                     </Button>
                 </DialogActions>
             </Dialog>
-
         </Container>
-    )
+    );
 };
+
+const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' };
+    return new Date(dateString).toLocaleDateString('en-US', options);
+};
+
+const KeyValuePair = ({ label, value }) => (
+    <Typography variant="body2" sx={{ marginBottom: '8px' }}>
+        <strong>{label}:</strong> {value}
+    </Typography>
+);
 
 export default ProjectsPage;
