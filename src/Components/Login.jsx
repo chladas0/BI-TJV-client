@@ -10,18 +10,26 @@ const LoginPage = (props) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         const responseUsers = await axios.get(
             `http://localhost:8080/users`
         );
 
         const users = responseUsers.data;
         const findUser = users.find((user) => user.username === username);
-        if (findUser) {
+
+        try {
+            await axios.post(
+                `http://localhost:8080/authenticateuser`, {
+                    username,
+                    password
+                }
+            );
             props.setUser(findUser);
             localStorage.setItem("user", JSON.stringify(findUser));
             navigate("/");
-        } else {
-            alert("User not found");
+        } catch (error) {
+            alert("Authentication failed: Invalid username or password")
         }
     };
 
