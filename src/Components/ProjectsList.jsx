@@ -14,7 +14,7 @@ import {
     DialogContent,
     DialogActions,
     DialogContentText,
-    Fab,
+    Fab, CircularProgress,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -44,6 +44,7 @@ const ProjectsPage = ({ userId }) => {
     const [deletingProject, setDeletingProject] = useState(null);
     const [unfinishedTasks, setUnfinishedTasks] = useState([]);
     const [showUnfinishedTasks, setShowUnfinishedTasks] = useState(false);
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -62,6 +63,7 @@ const ProjectsPage = ({ userId }) => {
             try {
                 const tasks = await fetchUnfinishedTasks(userId);
                 setUnfinishedTasks(tasks);
+                setLoading(false);
             } catch (error) {
                 console.error('Error fetching unfinished tasks:', error);
             }
@@ -71,6 +73,7 @@ const ProjectsPage = ({ userId }) => {
             fetchAndSetProjects();
             fetchAndSetUnfinishedTasks();
         }
+
     }, [userId]);
 
     const handleCreateProjectClick = () => {
@@ -120,8 +123,28 @@ const ProjectsPage = ({ userId }) => {
         navigate(`/projects/${projectId}`);
     };
 
+
+    if(!userId) {
+        return (
+            <Typography variant="h6" style={{ marginTop: '20px', textAlign: 'center'}}>
+                You must be logged in to see projects.
+            </Typography>
+        )
+    }
+
+    if (loading) {
+        return (
+            <div style={{ textAlign: 'center', marginTop: '50px' }}>
+                <CircularProgress />
+            </div>
+        );
+    }
+
     return (
         <Container maxWidth="lg" style={{ marginTop: '20px' }}>
+            <Typography variant="h4" gutterBottom sx={{ padding: '20px' }}>
+                Your Projects
+            </Typography>
             <Grid container spacing={3}>
                 {projects.map((project) => (
                     <Grid item xs={12} sm={6} md={4}
@@ -180,24 +203,32 @@ const ProjectsPage = ({ userId }) => {
 
                 {showUnfinishedTasks && (
                     <Grid item xs={12}>
-                        <Typography variant="h4" style={{ marginBottom: '20px', color: '#8b0000' }}>
-                            Unfinished Tasks
-                        </Typography>
-                        <Grid container spacing={3}>
-                            {unfinishedTasks.map((task) => (
-                                <Grid item xs={12} md={4} key={task.id} onClick={() => handleUnfinishedTaskClick(task.id)}>
-                                    <Card sx={{ cursor: 'pointer', marginBottom: '20px'}}>
-                                        <CardContent>
-                                        <Box>
-                                            <KeyValuePair label="Name" value={task.taskName} />
-                                            <KeyValuePair label="Due Date" value={formatDate(task.dueDate)} />
-                                            <KeyValuePair label="Project" value={findProjectByTaskId(task.id).name} />
-                                        </Box>
-                                        </CardContent>
-                                    </Card>
+                        {unfinishedTasks.length > 0 ? (
+                            <>
+                                <Typography variant="h4" style={{ marginBottom: '20px', color: '#8b0000' }}>
+                                    Unfinished Tasks
+                                </Typography>
+                                <Grid container spacing={3}>
+                                    {unfinishedTasks.map((task) => (
+                                        <Grid item xs={12} md={4} key={task.id} onClick={() => handleUnfinishedTaskClick(task.id)}>
+                                            <Card sx={{ cursor: 'pointer', marginBottom: '20px' }}>
+                                                <CardContent>
+                                                    <Box>
+                                                        <KeyValuePair label="Name" value={task.taskName} />
+                                                        <KeyValuePair label="Due Date" value={formatDate(task.dueDate)} />
+                                                        <KeyValuePair label="Project" value={findProjectByTaskId(task.id).name} />
+                                                    </Box>
+                                                </CardContent>
+                                            </Card>
+                                        </Grid>
+                                    ))}
                                 </Grid>
-                            ))}
-                        </Grid>
+                            </>
+                        ) : (
+                            <Typography variant="h6" style={{ marginTop: '20px', color: '#555' }}>
+                                All tasks are finished. You can rest now!
+                            </Typography>
+                        )}
                     </Grid>
                 )}
 
