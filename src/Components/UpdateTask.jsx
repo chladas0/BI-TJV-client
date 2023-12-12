@@ -26,7 +26,7 @@ const UpdateTask = () => {
     useEffect(() => {
         const fetchTaskData = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/task/${taskId}`);
+                const response = await axios.get(`http://localhost:8080/tasks/${taskId}`);
                 const taskData = response.data;
                 setTaskName(taskData.taskName);
                 setDescription(taskData.description);
@@ -44,7 +44,7 @@ const UpdateTask = () => {
     const handleUpdateTask = async (e) => {
         try {
             e.preventDefault();
-            await axios.put(`http://localhost:8080/task/${taskId}`, {
+            await axios.put(`http://localhost:8080/tasks/${taskId}`, {
                 taskName,
                 description,
                 creationDate,

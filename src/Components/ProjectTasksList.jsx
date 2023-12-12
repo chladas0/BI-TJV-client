@@ -22,6 +22,7 @@ import AddIcon from "@mui/icons-material/Add";
 const TaskList = ({ userId }) => {
     const [tasks, setTasks] = useState([]);
     const {projectId } = useParams();
+    const [projectName, setProjectName] = useState('');
     const [deletingTask, setDeletingTask] = useState(null);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
@@ -29,8 +30,10 @@ const TaskList = ({ userId }) => {
     useEffect(() => {
         const fetchTasks = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/projects/${projectId}/tasks`);
-                setTasks(response.data);
+                const responseTasks = await axios.get(`http://localhost:8080/projects/${projectId}/tasks`);
+                setTasks(responseTasks.data);
+                const responseProject = await axios.get(`http://localhost:8080/projects/${projectId}`);
+                setProjectName(responseProject.data.name);
             } catch (error) {
                 console.error('Error fetching tasks:', error);
             }
@@ -59,7 +62,7 @@ const TaskList = ({ userId }) => {
 
     const handleDeleteConfirm = async () => {
         try {
-            await axios.delete(`http://localhost:8080/task/${deletingTask}`);
+            await axios.delete(`http://localhost:8080/tasks/${deletingTask}`);
             const updatedTasks = await axios.get(`http://localhost:8080/projects/${projectId}/tasks`);
             setTasks(updatedTasks.data);
         } catch (error) {
@@ -81,7 +84,7 @@ const TaskList = ({ userId }) => {
     return (
         <Grid>
             <Typography variant="h4" gutterBottom sx={{ padding: '20px' }}>
-                Your Tasks
+                {projectName} - Tasks
             </Typography>
             {tasks.length > 0 ? (
             <Grid container spacing={3} sx={{ padding: '20px' }}>

@@ -5,7 +5,7 @@ import Navbar from './Components/Navbar';
 import LoginPage from './Components/Login';
 import ProjectsPage from "./Components/ProjectsList";
 import RegisterPage from "./Components/RegisterPage";
-import ProjectPage from "./Components/ProjectPage";
+import ProjectPage from "./Components/ProjectTasksList";
 import CreateTask from "./Components/CreateTask";
 import UpdateTask from "./Components/UpdateTask";
 import CreateProject from "./Components/CreateProject";
