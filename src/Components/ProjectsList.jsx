@@ -145,6 +145,7 @@ const ProjectsPage = ({ userId }) => {
             <Typography variant="h4" gutterBottom sx={{ padding: '20px' }}>
                 Your Projects
             </Typography>
+            {projects.length > 0 ? (
             <Grid container spacing={3}>
                 {projects.map((project) => (
                     <Grid item xs={12} sm={6} md={4}
@@ -231,22 +232,27 @@ const ProjectsPage = ({ userId }) => {
                         )}
                     </Grid>
                 )}
-
-                <Fab
-                    color="primary"
-                    aria-label="add"
-                    sx={{
-                        position: 'fixed',
-                        bottom: '16px',
-                        right: '16px',
-                        width: '70px',
-                        height: '70px',
-                    }}
-                    onClick={handleCreateProjectClick}
-                >
-                    <AddIcon />
-                </Fab>
             </Grid>
+               ) : (
+                <Typography variant="h6" style={{ marginTop: '20px', textAlign: 'center', color: '#555' }}>
+                There are no projects. Start by creating one!
+                </Typography>
+                    )}
+
+            <Fab
+                color="primary"
+                aria-label="add"
+                sx={{
+                    position: 'fixed',
+                    bottom: '16px',
+                    right: '16px',
+                    width: '70px',
+                    height: '70px',
+                }}
+                onClick={handleCreateProjectClick}
+            >
+                <AddIcon />
+            </Fab>
 
             <Dialog open={deletingProject !== null} onClose={handleDeleteCancel}>
                 <DialogTitle>Delete Project</DialogTitle>
